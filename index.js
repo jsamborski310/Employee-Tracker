@@ -36,6 +36,33 @@ const choices = departments.map(department => {
     }
 })
 
+
+// const employees = [
+//     {
+//         type: "input",
+//         message: "Provide the managers' first and last name.",
+//         name: "name"
+//     },
+//     {
+//         type: "input",
+//         message: "Enter managers' employee ID number.",
+//         name: "id"
+       
+//     }, 
+//     {
+//         type: "input",
+//         message: "What is the managers' email address?",
+//         name: "email"
+//     },
+//     {
+//         type: "input",
+//         message: "What is the managers' office number?",
+//         name: "officeNumber"
+//     }
+// ];
+
+
+
 let init = {
     viewEmployees: "View All Employees",
     addEmployee: "Add Employee",
@@ -67,30 +94,11 @@ const answers = await inquirer
 
                 //  Look at video for choices. He condensed it into one variable
             ]
-        // },
-        // {
-        //     type: "list",
-        //     name: "department_id",
-        //     message: "Select a department",
-        //     choices: [ 
-        //         { name: "Human Resources", value: 1 },
-        //         { name: "Creative", value: 2}, 
-        //         { name: "Software Engineering", value: 3}, 
-        //         { name: "Marketing", value: 4 },
-        //         { name: "IT", value: 5}
-        //         //  Look at video for choices. He condensed it into one variable
-        //     ]
         }
-
-
-        // --->Take the answers and...do something? 
-
         
     ]) 
 
         .then((answers) => {
-            
-        // console.log(answers.init);
 
         switch (answers.init) {
             case init.viewDepartments:
@@ -105,38 +113,67 @@ const answers = await inquirer
                 viewAllRoles();
                 break;
 
+            case init.addDepartment:
+                addNewDept();
+                break;
+
         }
     })
 }
 
+// async function initialize() {
+//     const answersDept = await inquirer 
+//         .prompt([
+//             {
+//                 type: "list",
+//                 name: "department_id",
+//                 message: "Select a department",
+//                 choices: [ 
+//                     { name: "Human Resources", value: 1 },
+//                     { name: "Creative", value: 2}, 
+//                     { name: "Software Engineering", value: 3}, 
+//                     { name: "Marketing", value: 4 },
+//                     { name: "IT", value: 5}
+//                     //  Look at video for choices. He condensed it into one variable
+//                 ]
+//             }
+            
+//         ]) 
+//         .then((answersDept) => {
+
+//            console.log(answersDept.department_id); 
+//             addDepartment();
+                 
+    
+    
+            
+//         })
+//     }
 
 
-    // console.log(answers.init);
+async function addNewDept() {
+    const answersDept = await inquirer 
+        .prompt([
+            {
+                type: "input",
+                name: "dept_name",
+                message: "What is the name of the department?",
+            }
+            
+        ]) 
+        .then((answersDept) => {
 
-    // .then((answers) => {
-        // console.log(answers.init);
-
-    // })
-
-
-// db.query = util.promisify( db.query);
-//  Watch class video for how this is set up. This changes how to query, and allows for the use of async. 
-
-
-// //  --->Do I need this now? See video
-// db.query('SELECT * FROM employees' , (err, results) => {
-//     console.log(err);
-//     console.table(results);
-// });
-
-//  Present user with options
-    // TO DO: Start with What would you like to do? Then display questions based   on that.
+           console.log("You have added", answersDept.dept_name, "to the database."); 
+            addDepartment();
+            viewAllDepartments();
+            
+        })
+    }
 
 
-//  View all departments - READ - SELECT * FROM departments
+//  VIEWING DATA
 
-
-function viewAllDepartments(answers) {
+function viewAllDepartments(answersDept) {
 
         db.query('SELECT * FROM department', function (err, results) {
             
@@ -163,27 +200,37 @@ function viewAllEmployees(answers) {
 
 function viewAllRoles(answers) {
 
-    db.query('SELECT * FROM role', function (err, results) {
+    db.query(       
+        'SELECT * FROM role', 
+    
+        function (err, results) {
         
-        console.log('\nALL ROLES\n')
-        console.table(results);
+            console.log('\nALL ROLES\n')
+            console.table(results);
 
-        initialize();
+            initialize();
       });
 
 }
 
-//  View all roles - READ - SELECT * FROM [table_name]
+// CREATING/UPDATING
 
-//  View all employees - READ - SELECT * FROM [table_name]
-    // ------ Need to accomplish more than SELECT * FROM since employees doesn't have a department.
+function addDepartment(answersDept) {
+
+    db.query(
+        `INSERT INTO department (id, name) VALUES (9, "answersDept.dept_name");`, 
+        
+        function (err, results) {
+        
+            console.log('\nUPDATED DEPARTMENTS\n')
+            console.table(results);
+
+            initialize();
+      });
+
+}
 
 
-
-
-//  Add a department  - CREATE - INSERT INTO [table_name] (col1, col2) VALUES (value1, value2)
-
-//  Add a role - CREATE - INSERT INTO [table_name] (col1, col2) VALUES (value1, value2)
 
 async function createRole() {
 
@@ -201,6 +248,42 @@ async function createRole() {
 
 
 //  Update an employee
+
+
+
+
+// db.query = util.promisify( db.query);
+//  Watch class video for how this is set up. This changes how to query, and allows for the use of async. 
+
+
+// //  --->Do I need this now? See video
+// db.query('SELECT * FROM employees' , (err, results) => {
+//     console.log(err);
+//     console.table(results);
+// });
+
+//  Present user with options
+    // TO DO: Start with What would you like to do? Then display questions based   on that.
+
+
+//  View all departments - READ - SELECT * FROM departments
+
+
+
+
+//  View all roles - READ - SELECT * FROM [table_name]
+
+//  View all employees - READ - SELECT * FROM [table_name]
+    // ------ Need to accomplish more than SELECT * FROM since employees doesn't have a department.
+
+
+
+
+//  Add a department  - CREATE - INSERT INTO [table_name] (col1, col2) VALUES (value1, value2)
+
+//  Add a role - CREATE - INSERT INTO [table_name] (col1, col2) VALUES (value1, value2)
+
+
 
 
 ///////////////////////
