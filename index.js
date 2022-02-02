@@ -1,20 +1,34 @@
 const mysql = require('mysql2');
 const db = require('./db/connection');
 const inquirer = require('inquirer');
+const cTable = require('console.table')
+// require('console.table');
 
 //  Do this step twice for employees, etc. 
 const departments = [
     {
         id: 1,
-        name: "Sales"
+        name: "Human Resources"
     },
     {
         id: 2,
-        name: "Accounting"
+        name: "Creative"
+    },
+    {
+        id: 3,
+        name: "Software Engineering"
+    },
+    {
+        id: 4,
+        name: "Marketing"
+    },
+    {
+        id: 5,
+        name: "IT"
     }
 ]
 
-//  --> map goes here
+// //  --> map goes here
 const choices = departments.map(department => {
     return {
         name: department.name,
@@ -22,26 +36,87 @@ const choices = departments.map(department => {
     }
 })
 
+let init = {
+    viewEmployees: "View All Employees",
+    addEmployee: "Add Employee",
+    updateEmployeeRole: "Update Employee Role",
+    viewRoles: "View All Roles",
+    addRole: "Add Role",
+    viewDepartments: "View All Departments",
+    addDepartment: "Add Department"
+}
+
+
+initialize();
+
+async function initialize() {
 const answers = await inquirer 
     .prompt([
         {
-        type: "list",
-        name: "department_id",
-        question: "Choice a department",
-        choices: [ 
-            { name: "Sales", value: 1 },
-            { name: "Accounting", value: 2}, 
-            //  Look at video for choices. He condensed it into one variable
-         
-        ]
+            name: "init",
+            type: "list",
+            message: "What would you like to do?",
+            choices: [ 
+                init.viewEmployees,
+                init.addEmployee,
+                init.updateEmployeeRole,
+                init.viewRoles,
+                init.addRole,
+                init.viewDepartments,
+                init.addDepartment
 
+                //  Look at video for choices. He condensed it into one variable
+            ]
+        // },
+        // {
+        //     type: "list",
+        //     name: "department_id",
+        //     message: "Select a department",
+        //     choices: [ 
+        //         { name: "Human Resources", value: 1 },
+        //         { name: "Creative", value: 2}, 
+        //         { name: "Software Engineering", value: 3}, 
+        //         { name: "Marketing", value: 4 },
+        //         { name: "IT", value: 5}
+        //         //  Look at video for choices. He condensed it into one variable
+        //     ]
         }
 
-        // --->Take the answers and...do something? 
-    ])
-    .then((answers) => {
 
+        // --->Take the answers and...do something? 
+
+        
+    ]) 
+
+        .then((answers) => {
+            
+        // console.log(answers.init);
+
+        switch (answers.init) {
+            case init.viewDepartments:
+                viewAllDepartments();
+                break;
+
+            case init.viewEmployees:
+                viewAllEmployees();
+                break;
+
+            case init.viewRoles:
+                viewAllRoles();
+                break;
+
+        }
     })
+}
+
+
+
+    // console.log(answers.init);
+
+    // .then((answers) => {
+        // console.log(answers.init);
+
+    // })
 
 
 // db.query = util.promisify( db.query);
@@ -61,8 +136,40 @@ const answers = await inquirer
 //  View all departments - READ - SELECT * FROM departments
 
 
-function viewAllDepartments() {
+function viewAllDepartments(answers) {
 
+        db.query('SELECT * FROM department', function (err, results) {
+            
+            console.log('\nALL DEPARTMENTS\n')
+            console.table(results);
+
+            initialize();
+          });
+
+}
+
+
+function viewAllEmployees(answers) {
+
+    db.query('SELECT * FROM employee', function (err, results) {
+        
+        console.log('\nALL EMPLOYEES\n')
+        console.table(results);
+
+        initialize();
+      });
+
+}
+
+function viewAllRoles(answers) {
+
+    db.query('SELECT * FROM role', function (err, results) {
+        
+        console.log('\nALL ROLES\n')
+        console.table(results);
+
+        initialize();
+      });
 
 }
 
