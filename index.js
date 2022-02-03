@@ -241,7 +241,7 @@ function addNewRole() {
                     }
 
                 console.log("\nYou have added a new", roles.title, "role to the database.\n"); 
-
+    
                 db.query(
                 `INSERT INTO role (id, title, salary, department_id) VALUES (${roles.id}, "${roles.title}", ${roles.salary}, ${roles.department_id});`, 
                 
