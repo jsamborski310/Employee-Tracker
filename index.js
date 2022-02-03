@@ -160,54 +160,54 @@ async function addNewDept() {
         })
     }
 
-async function addNewRole() {
-    const answersRole = await inquirer 
-        .prompt([
-            {
-                type: "input",
-                name: "title",
-                message: "What is the name of the role?",
-            },
-            {
-                type: "input",
-                name: "salary",
-                message: "What is the salary of the role?",
-            },
-            {
-                type: "input",
-                name: "department_id",
-                message: "Which department does the role belong to?",
-                choices: departments.name
-            },
-            {
-                type: "input",
-                name: "role_id",
-                message: "Provide the role ID.",
-            }
+// async function addNewRole() {
+//     const answersRole = await inquirer 
+//         .prompt([
+//             {
+//                 type: "input",
+//                 name: "title",
+//                 message: "What is the name of the role?",
+//             },
+//             {
+//                 type: "input",
+//                 name: "salary",
+//                 message: "What is the salary of the role?",
+//             },
+//             {
+//                 type: "input",
+//                 name: "department_id",
+//                 message: "Which department does the role belong to?",
+//                 choices: departments.name
+//             },
+//             {
+//                 type: "input",
+//                 name: "role_id",
+//                 message: "Provide the role ID.",
+//             }
             
-        ]) 
-        .then((answersRole) => {
+//         ]) 
+//         .then((answersRole) => {
 
 
-            const roles = answersRole.map(role => {
-                return {
-                    title: answersRole.title,
-                    salary: answersRole.salary,
-                    department_id: answersRole.department_id,
-                    id: answersRole.role_id
-                }
-            })
+//             const roles = answersRole.map(role => {
+//                 return {
+//                     title: answersRole.title,
+//                     salary: answersRole.salary,
+//                     department_id: answersRole.department_id,
+//                     id: answersRole.role_id
+//                 }
+//             })
 
-                // role.title = answersRole.title;
-                // role.salary = answersRole.salary;
-                // role.department_id = answersRole.department_id;
-                // role.role_id = answersRole.role_id;
+//                 // role.title = answersRole.title;
+//                 // role.salary = answersRole.salary;
+//                 // role.department_id = answersRole.department_id;
+//                 // role.role_id = answersRole.role_id;
 
-                addRole();
-                viewAllRoles();
+//                 addRole();
+//                 viewAllRoles();
             
-        })
-    }
+//         })
+//     }
 
 //  VIEWING DATA
 
@@ -273,22 +273,117 @@ function addDepartment(answersDept) {
 
 
 
-async function addRole(roles) {
+function addNewRole() {
 
-    console.log("\nYou have added a new ", roles.title, "role to the database.\n"); 
 
-    db.query(
-        `INSERT INTO role (id, title, salary, department_id) VALUES ("${roles.id}, ${roles.title}, ${roles.salary}, ${roles.department_id}");`, 
-        
-        function (err, results) {
-        
-            console.log('\nUPDATED ROLE\n')
-            console.table(results);
+    db.query('SELECT * FROM department', async (err, deptData) => {
+        console.log(deptData)
 
-            
-      });
+        const departmentArray = await deptData.map((id, name) => {
+            return {value: id, name: name}
+    
+        })
+        console.log(departmentArray)
+    })
+
 
 }
+
+    
+    
+
+// if you want error handling wrap this in a TRY CATCH block.
+
+// async function departmentsData() {
+//     const departmentArray = await db.query('SELECT * FROM department');
+//     console.table(departmentArray);
+    
+// };
+///////////////
+// const choices = departments.map(department => {
+//     return {
+//         name: department.name,
+//         value: department.id
+//     }
+// })
+    
+
+
+    // const answersRole = await inquirer 
+    //     .prompt([
+    //         {
+    //             type: "input",
+    //             name: "title",
+    //             message: "What is the name of the role?",
+    //         },
+    //         {
+    //             type: "input",
+    //             name: "salary",
+    //             message: "What is the salary of the role?",
+    //         },
+    //         {
+    //             type: "input",
+    //             name: "department_id",
+    //             message: "Which department does the role belong to?",
+    //             choices: departments.name
+    //         },
+    //         {
+    //             type: "input",
+    //             name: "role_id",
+    //             message: "Provide the role ID.",
+    //         }
+            
+    //     ]) 
+    //     .then((answersRole) => {
+
+
+    //         const roles = answersRole.map(role => {
+    //             return {
+    //                 title: answersRole.title,
+    //                 salary: answersRole.salary,
+    //                 department_id: answersRole.department_id,
+    //                 id: answersRole.role_id
+    //             }
+    //         })
+
+    //             // role.title = answersRole.title;
+    //             // role.salary = answersRole.salary;
+    //             // role.department_id = answersRole.department_id;
+    //             // role.role_id = answersRole.role_id;
+
+    //             addRole();
+    //             viewAllRoles();
+            
+    //     })
+    
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////
+    // console.log("\nYou have added a new ", roles.title, "role to the database.\n"); 
+
+    // db.query(
+    //     `INSERT INTO role (id, title, salary, department_id) VALUES ("${roles.id}, ${roles.title}, ${roles.salary}, ${roles.department_id}");`, 
+        
+    //     function (err, results) {
+        
+    //         console.log('\nUPDATED ROLE\n')
+    //         console.table(results);
+
+            
+    //   });
+
+    ///////////
+
 
 
     //  ------ SELECT the existing department out of the `roles` table
