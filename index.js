@@ -37,29 +37,7 @@ const choices = departments.map(department => {
 })
 
 
-// const employees = [
-//     {
-//         type: "input",
-//         message: "Provide the managers' first and last name.",
-//         name: "name"
-//     },
-//     {
-//         type: "input",
-//         message: "Enter managers' employee ID number.",
-//         name: "id"
-       
-//     }, 
-//     {
-//         type: "input",
-//         message: "What is the managers' email address?",
-//         name: "email"
-//     },
-//     {
-//         type: "input",
-//         message: "What is the managers' office number?",
-//         name: "officeNumber"
-//     }
-// ];
+
 
 
 
@@ -117,6 +95,11 @@ const answers = await inquirer
                 addNewDept();
                 break;
 
+            case init.addRole:
+                addNewRole();
+                break;
+
+
         }
     })
 }
@@ -156,20 +139,75 @@ async function addNewDept() {
         .prompt([
             {
                 type: "input",
-                name: "dept_name",
+                name: "name",
                 message: "What is the name of the department?",
+            },
+            {
+                type: "input",
+                name: "id",
+                message: "Enter the department id.",
             }
             
         ]) 
         .then((answersDept) => {
 
-           console.log("You have added", answersDept.dept_name, "to the database."); 
+            departments.value = answersDept.id;
+            departments.name = answersDept.name;
+
             addDepartment();
             viewAllDepartments();
             
         })
     }
 
+async function addNewRole() {
+    const answersRole = await inquirer 
+        .prompt([
+            {
+                type: "input",
+                name: "title",
+                message: "What is the name of the role?",
+            },
+            {
+                type: "input",
+                name: "salary",
+                message: "What is the salary of the role?",
+            },
+            {
+                type: "input",
+                name: "department_id",
+                message: "Which department does the role belong to?",
+                choices: departments.name
+            },
+            {
+                type: "input",
+                name: "role_id",
+                message: "Provide the role ID.",
+            }
+            
+        ]) 
+        .then((answersRole) => {
+
+
+            const roles = answersRole.map(role => {
+                return {
+                    title: answersRole.title,
+                    salary: answersRole.salary,
+                    department_id: answersRole.department_id,
+                    id: answersRole.role_id
+                }
+            })
+
+                // role.title = answersRole.title;
+                // role.salary = answersRole.salary;
+                // role.department_id = answersRole.department_id;
+                // role.role_id = answersRole.role_id;
+
+                addRole();
+                viewAllRoles();
+            
+        })
+    }
 
 //  VIEWING DATA
 
@@ -216,24 +254,39 @@ function viewAllRoles(answers) {
 // CREATING/UPDATING
 
 function addDepartment(answersDept) {
+    // console.log("This is the department name: ", departments.name);
+
+    console.log("\nYou have added", departments.name, "to the database.\n"); 
 
     db.query(
-        `INSERT INTO department (id, name) VALUES (9, "answersDept.dept_name");`, 
+        `INSERT INTO department (id, name) VALUES (${departments.value}, "${departments.name}");`, 
         
         function (err, results) {
         
             console.log('\nUPDATED DEPARTMENTS\n')
             console.table(results);
 
-            initialize();
+            
       });
 
 }
 
 
 
-async function createRole() {
+async function addRole(roles) {
 
+    console.log("\nYou have added a new ", roles.title, "role to the database.\n"); 
+
+    db.query(
+        `INSERT INTO role (id, title, salary, department_id) VALUES ("${roles.id}, ${roles.title}, ${roles.salary}, ${roles.department_id}");`, 
+        
+        function (err, results) {
+        
+            console.log('\nUPDATED ROLE\n')
+            console.table(results);
+
+            
+      });
 
 }
 
