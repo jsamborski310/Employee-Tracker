@@ -1,7 +1,8 @@
 const mysql = require('mysql2');
 const db = require('./db/connection');
 const inquirer = require('inquirer');
-const cTable = require('console.table')
+const cTable = require('console.table');
+const connection = require('./db/connection');
 // require('console.table');
 
 
@@ -189,21 +190,15 @@ function addDepartment(answersDept) {
 }
 
 
-
 function addNewRole() {
 
 
     db.query('SELECT * FROM department', async (err, deptData) => {
-        console.log(deptData)
-
-        const departmentArray = await deptData.map((id, name) => {
-            return {value: id, name: name}
+        const departmentArray = await deptData.map((name) => {
+            return name;
     
         })
-        console.log(departmentArray)
-    })
-
-
+ 
         const answersRole = inquirer 
             .prompt([
                 {
@@ -217,10 +212,10 @@ function addNewRole() {
                     message: "What is the salary of the role?",
                 },
                 {
-                    type: "input",
+                    type: "list",
                     name: "department_id",
                     message: "Which department does the role belong to?",
-                    choices: departmentArray.name
+                    choices: departmentArray,
                 },
                 {
                     type: "input",
@@ -231,33 +226,49 @@ function addNewRole() {
             ]) 
             .then((answersRole) => {
 
-
-                const roles = answersRole.map(role => {
-                    return {
+                const roles = {
                         title: answersRole.title,
                         salary: answersRole.salary,
                         department_id: answersRole.department_id,
                         id: answersRole.role_id
                     }
-                })
 
-                console.log("\nYou have added a new ", roles.title, "role to the database.\n"); 
+                console.log("\nYou have added a new", roles.title, "role to the database.\n"); 
 
                 db.query(
-                `INSERT INTO role (id, title, salary, department_id) VALUES ("${roles.id}, ${roles.title}, ${roles.salary}, ${roles.department_id}");`, 
+                `INSERT INTO role (id, title, salary, department_id) VALUES (${roles.id}, "${roles.title}", ${roles.salary}, ${roles.department_id}");`, 
                 
                 function (err, results) {
-                
+
+                    // if (err) {
+                    //     throw err;
+                    // }
+
                     console.log('\nUPDATED ROLE\n')
                     console.table(results);
                             
-                    addRole();
+                    
+                    // addNewRole();
                     viewAllRoles();  
                         
-                    })
+                    });
 
+                    // var sql = `INSERT INTO role (id, title, salary, department_id) VALUES (${roles.id}, "${roles.title}", ${roles.salary}, ${roles.department_id}")`;
 
-})}
+                    // db.query(sql, function (err, results) {
+                    //     // if (err) throw err;
+                    //     console.log('\nUPDATED ROLE\n')
+                    //     console.table(results);
+                    // });
+                    // db.end();
+                    
+    
+
+})
+
+})
+
+}
 
 
     
