@@ -199,11 +199,13 @@ function addNewRole() {
     
     //     })
 
-    const departmentArray = await deptData.map(({ id, name }) => ({
-        name: name,
-        value: id
-    }));
+    db.query('SELECT * FROM department', async (err, deptData) => {
+        const departmentArray = await deptData.map(({ id, name }) => ({
+            value: id,
+            name: name
+        }));
  
+
         const answersRole = inquirer 
             .prompt([
                 {
@@ -234,14 +236,14 @@ function addNewRole() {
                 const roles = {
                         title: answersRole.title,
                         salary: answersRole.salary,
-                        // department_id: answersRole.department_id,
+                        department_id: answersRole.department_id,
                         id: answersRole.role_id
                     }
 
                 console.log("\nYou have added a new", roles.title, "role to the database.\n"); 
 
                 db.query(
-                `INSERT INTO role (id, title, salary, department_id) VALUES (${roles.id}, "${roles.title}", ${roles.salary}, ${departmentArray.value});`, 
+                `INSERT INTO role (id, title, salary, department_id) VALUES (${roles.id}, "${roles.title}", ${roles.salary}, ${roles.department_id});`, 
                 
                 function (err, results) {
 
@@ -273,9 +275,9 @@ function addNewRole() {
 
 }
 
-// )
+)
 
-// }
+}
 
 
     
