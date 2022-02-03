@@ -287,11 +287,17 @@ function addNewEmployee() {
         }));
  
 
+    // db.query('SELECT * FROM employee', async (err, employeeData) => {
+    // const employees = await employeeData.map(({ id, first_name, last_name }) => ({
+    //     value: id,
+    //     first_name: first_name,
+    //     last_name: last_name
+    // }));
+
     db.query('SELECT * FROM employee', async (err, employeeData) => {
-    const employees = await employeeData.map(({ id, first_name, last_name }) => ({
-        value: id,
-        name: first_name, last_name 
-    }));
+        const employees = await employeeData.map(employeeData => 
+            `${employeeData.first_name} ${employeeData.last_name}`);
+
 
 
         const answers = inquirer 
@@ -317,7 +323,13 @@ function addNewEmployee() {
                     name: "manager_id",
                     message: "Who is the employee's manager?",
                     choices: employees,
+                },
+                {
+                    type: "input",
+                    name: "id",
+                    message: "What is the employee ID?",
                 }
+
                 
             ]) 
             .then((answers) => {
@@ -327,10 +339,10 @@ function addNewEmployee() {
                         last_name: answers.last_name,
                         role_id: answers.role_id,
                         manager_id: answers.manager_id,
-                        id: employees.id
+                        id: answers.id
                     }
 
-                console.log("\nYou have added a new", employees.name, "role to the database.\n"); 
+                console.log("\nYou have added ", employee.first_name, employee.last_name, "to the employee's database.\n"); 
     
                 db.query(
                 `INSERT INTO role (id, first_name, last_name, role_id, manager_id) VALUES (${employee.id}, "${employee.first_name}", "${employee.last_name}", ${employee.role_id}, "${employee.manager_id}");`, 
@@ -350,13 +362,14 @@ function addNewEmployee() {
             })
 
 
-
+        });
 
         })
         
-    })
+    }
+//     )
 
-}
+// }
 
 
 
