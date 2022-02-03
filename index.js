@@ -4,42 +4,36 @@ const inquirer = require('inquirer');
 const cTable = require('console.table')
 // require('console.table');
 
-//  Do this step twice for employees, etc. 
-const departments = [
-    {
-        id: 1,
-        name: "Human Resources"
-    },
-    {
-        id: 2,
-        name: "Creative"
-    },
-    {
-        id: 3,
-        name: "Software Engineering"
-    },
-    {
-        id: 4,
-        name: "Marketing"
-    },
-    {
-        id: 5,
-        name: "IT"
-    }
-]
 
-// //  --> map goes here
+const departments = [
+        {
+            id: 1,
+            name: "Human Resources"
+        },
+        {
+            id: 2,
+            name: "Creative"
+        },
+        {
+            id: 3,
+            name: "Software Engineering"
+        },
+        {
+            id: 4,
+            name: "Marketing"
+        },
+        {
+            id: 5,
+            name: "IT"
+        }
+    ]
+
 const choices = departments.map(department => {
     return {
         name: department.name,
         value: department.id
     }
 })
-
-
-
-
-
 
 let init = {
     viewEmployees: "View All Employees",
@@ -104,34 +98,6 @@ const answers = await inquirer
     })
 }
 
-// async function initialize() {
-//     const answersDept = await inquirer 
-//         .prompt([
-//             {
-//                 type: "list",
-//                 name: "department_id",
-//                 message: "Select a department",
-//                 choices: [ 
-//                     { name: "Human Resources", value: 1 },
-//                     { name: "Creative", value: 2}, 
-//                     { name: "Software Engineering", value: 3}, 
-//                     { name: "Marketing", value: 4 },
-//                     { name: "IT", value: 5}
-//                     //  Look at video for choices. He condensed it into one variable
-//                 ]
-//             }
-            
-//         ]) 
-//         .then((answersDept) => {
-
-//            console.log(answersDept.department_id); 
-//             addDepartment();
-                 
-    
-    
-            
-//         })
-//     }
 
 
 async function addNewDept() {
@@ -160,54 +126,6 @@ async function addNewDept() {
         })
     }
 
-// async function addNewRole() {
-//     const answersRole = await inquirer 
-//         .prompt([
-//             {
-//                 type: "input",
-//                 name: "title",
-//                 message: "What is the name of the role?",
-//             },
-//             {
-//                 type: "input",
-//                 name: "salary",
-//                 message: "What is the salary of the role?",
-//             },
-//             {
-//                 type: "input",
-//                 name: "department_id",
-//                 message: "Which department does the role belong to?",
-//                 choices: departments.name
-//             },
-//             {
-//                 type: "input",
-//                 name: "role_id",
-//                 message: "Provide the role ID.",
-//             }
-            
-//         ]) 
-//         .then((answersRole) => {
-
-
-//             const roles = answersRole.map(role => {
-//                 return {
-//                     title: answersRole.title,
-//                     salary: answersRole.salary,
-//                     department_id: answersRole.department_id,
-//                     id: answersRole.role_id
-//                 }
-//             })
-
-//                 // role.title = answersRole.title;
-//                 // role.salary = answersRole.salary;
-//                 // role.department_id = answersRole.department_id;
-//                 // role.role_id = answersRole.role_id;
-
-//                 addRole();
-//                 viewAllRoles();
-            
-//         })
-//     }
 
 //  VIEWING DATA
 
@@ -254,8 +172,7 @@ function viewAllRoles(answers) {
 // CREATING/UPDATING
 
 function addDepartment(answersDept) {
-    // console.log("This is the department name: ", departments.name);
-
+   
     console.log("\nYou have added", departments.name, "to the database.\n"); 
 
     db.query(
@@ -287,7 +204,61 @@ function addNewRole() {
     })
 
 
-}
+        const answersRole = inquirer 
+            .prompt([
+                {
+                    type: "input",
+                    name: "title",
+                    message: "What is the name of the role?",
+                },
+                {
+                    type: "input",
+                    name: "salary",
+                    message: "What is the salary of the role?",
+                },
+                {
+                    type: "input",
+                    name: "department_id",
+                    message: "Which department does the role belong to?",
+                    choices: departmentArray.name
+                },
+                {
+                    type: "input",
+                    name: "role_id",
+                    message: "Provide the role ID.",
+                }
+                
+            ]) 
+            .then((answersRole) => {
+
+
+                const roles = answersRole.map(role => {
+                    return {
+                        title: answersRole.title,
+                        salary: answersRole.salary,
+                        department_id: answersRole.department_id,
+                        id: answersRole.role_id
+                    }
+                })
+
+                console.log("\nYou have added a new ", roles.title, "role to the database.\n"); 
+
+                db.query(
+                `INSERT INTO role (id, title, salary, department_id) VALUES ("${roles.id}, ${roles.title}, ${roles.salary}, ${roles.department_id}");`, 
+                
+                function (err, results) {
+                
+                    console.log('\nUPDATED ROLE\n')
+                    console.table(results);
+                            
+                    addRole();
+                    viewAllRoles();  
+                        
+                    })
+
+
+})}
+
 
     
     
@@ -308,54 +279,6 @@ function addNewRole() {
 // })
     
 
-
-    // const answersRole = await inquirer 
-    //     .prompt([
-    //         {
-    //             type: "input",
-    //             name: "title",
-    //             message: "What is the name of the role?",
-    //         },
-    //         {
-    //             type: "input",
-    //             name: "salary",
-    //             message: "What is the salary of the role?",
-    //         },
-    //         {
-    //             type: "input",
-    //             name: "department_id",
-    //             message: "Which department does the role belong to?",
-    //             choices: departments.name
-    //         },
-    //         {
-    //             type: "input",
-    //             name: "role_id",
-    //             message: "Provide the role ID.",
-    //         }
-            
-    //     ]) 
-    //     .then((answersRole) => {
-
-
-    //         const roles = answersRole.map(role => {
-    //             return {
-    //                 title: answersRole.title,
-    //                 salary: answersRole.salary,
-    //                 department_id: answersRole.department_id,
-    //                 id: answersRole.role_id
-    //             }
-    //         })
-
-    //             // role.title = answersRole.title;
-    //             // role.salary = answersRole.salary;
-    //             // role.department_id = answersRole.department_id;
-    //             // role.role_id = answersRole.role_id;
-
-    //             addRole();
-    //             viewAllRoles();
-            
-    //     })
-    
 
 
 
@@ -444,3 +367,66 @@ function addNewRole() {
 //  Use JOIN to join in other roles to this table?
 
 //  mysql2 prepared statements. See npm for mysql2. See connection.execute
+
+
+//  Do this step twice for employees, etc. 
+// const departments = [
+//     {
+//         id: 1,
+//         name: "Human Resources"
+//     },
+//     {
+//         id: 2,
+//         name: "Creative"
+//     },
+//     {
+//         id: 3,
+//         name: "Software Engineering"
+//     },
+//     {
+//         id: 4,
+//         name: "Marketing"
+//     },
+//     {
+//         id: 5,
+//         name: "IT"
+//     }
+// ]
+
+// // //  --> map goes here
+// const choices = departments.map(department => {
+//     return {
+//         name: department.name,
+//         value: department.id
+//     }
+// })
+
+// async function initialize() {
+//     const answersDept = await inquirer 
+//         .prompt([
+//             {
+//                 type: "list",
+//                 name: "department_id",
+//                 message: "Select a department",
+//                 choices: [ 
+//                     { name: "Human Resources", value: 1 },
+//                     { name: "Creative", value: 2}, 
+//                     { name: "Software Engineering", value: 3}, 
+//                     { name: "Marketing", value: 4 },
+//                     { name: "IT", value: 5}
+//                     //  Look at video for choices. He condensed it into one variable
+//                 ]
+//             }
+            
+//         ]) 
+//         .then((answersDept) => {
+
+//            console.log(answersDept.department_id); 
+//             addDepartment();
+                 
+    
+    
+            
+//         })
+//     }
+
