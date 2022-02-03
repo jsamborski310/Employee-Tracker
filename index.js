@@ -145,13 +145,33 @@ function viewAllDepartments(answersDept) {
 
 function viewAllEmployees(answers) {
 
-    db.query('SELECT * FROM employee', function (err, results) {
+    // db.query('SELECT * FROM employee', function (err, results) {
         
-        console.log('\nALL EMPLOYEES\n')
-        console.table(results);
+    //     console.log('\nALL EMPLOYEES\n')
+    //     console.table(results);
 
-        initialize();
-      });
+    //     initialize();
+    //   });
+
+    const query = `SELECT employee.id, employee.first_name AS "first name", employee.last_name AS "last name", role.title, department.name AS department, role.salary, CONCAT(manager.first_name, " ", manager.last_name) AS manager 
+    FROM employee
+    LEFT JOIN employee manager on manager.id = employee.manager_id
+    INNER JOIN role ON (role.id=employee.role_id)
+    INNER JOIN department ON (department.id = role.department_id);
+    `;
+
+    console.log("the query:", query)
+        db.query(query, (err,results) => {
+
+            // error
+            console.log('\nALL EMPLOYEES\n')
+            console.table(results);
+
+            initialize();
+
+        }
+    
+    )
 
 }
 
@@ -192,12 +212,6 @@ function addDepartment(answersDept) {
 
 function addNewRole() {
 
-
-    // db.query('SELECT * FROM department', async (err, deptData) => {
-    //     const departmentArray = await deptData.map((name) => {
-    //         return name;
-    
-    //     })
 
     db.query('SELECT * FROM department', async (err, deptData) => {
         const departmentArray = await deptData.map(({ id, name }) => ({
@@ -254,28 +268,15 @@ function addNewRole() {
                     console.log('\nUPDATED ROLE\n')
                     console.table(results);
                             
-                    
-                    // addNewRole();
                     viewAllRoles();  
                         
                     });
 
-                    // var sql = `INSERT INTO role (id, title, salary, department_id) VALUES (${roles.id}, "${roles.title}", ${roles.salary}, ${roles.department_id}")`;
+            })
 
-                    // db.query(sql, function (err, results) {
-                    //     // if (err) throw err;
-                    //     console.log('\nUPDATED ROLE\n')
-                    //     console.table(results);
-                    // });
-                    // db.end();
-                    
-    
+        }
 
-})
-
-}
-
-)
+    )   
 
 }
 
@@ -283,49 +284,9 @@ function addNewRole() {
     
     
 
-// if you want error handling wrap this in a TRY CATCH block.
-
-// async function departmentsData() {
-//     const departmentArray = await db.query('SELECT * FROM department');
-//     console.table(departmentArray);
-    
-// };
-///////////////
-// const choices = departments.map(department => {
-//     return {
-//         name: department.name,
-//         value: department.id
-//     }
-// })
-    
 
 
 
-
-
-
-
-
-
-
-
-
-
-/////////////////////////
-    // console.log("\nYou have added a new ", roles.title, "role to the database.\n"); 
-
-    // db.query(
-    //     `INSERT INTO role (id, title, salary, department_id) VALUES ("${roles.id}, ${roles.title}, ${roles.salary}, ${roles.department_id}");`, 
-        
-    //     function (err, results) {
-        
-    //         console.log('\nUPDATED ROLE\n')
-    //         console.table(results);
-
-            
-    //   });
-
-    ///////////
 
 
 
@@ -353,26 +314,10 @@ function addNewRole() {
 //     console.table(results);
 // });
 
-//  Present user with options
-    // TO DO: Start with What would you like to do? Then display questions based   on that.
-
-
-//  View all departments - READ - SELECT * FROM departments
-
-
-
-
-//  View all roles - READ - SELECT * FROM [table_name]
-
+  
 //  View all employees - READ - SELECT * FROM [table_name]
     // ------ Need to accomplish more than SELECT * FROM since employees doesn't have a department.
 
-
-
-
-//  Add a department  - CREATE - INSERT INTO [table_name] (col1, col2) VALUES (value1, value2)
-
-//  Add a role - CREATE - INSERT INTO [table_name] (col1, col2) VALUES (value1, value2)
 
 
 
@@ -385,68 +330,4 @@ function addNewRole() {
 // Day 2 Lesson 11
 
 //  Use JOIN to join in other roles to this table?
-
-//  mysql2 prepared statements. See npm for mysql2. See connection.execute
-
-
-//  Do this step twice for employees, etc. 
-// const departments = [
-//     {
-//         id: 1,
-//         name: "Human Resources"
-//     },
-//     {
-//         id: 2,
-//         name: "Creative"
-//     },
-//     {
-//         id: 3,
-//         name: "Software Engineering"
-//     },
-//     {
-//         id: 4,
-//         name: "Marketing"
-//     },
-//     {
-//         id: 5,
-//         name: "IT"
-//     }
-// ]
-
-// // //  --> map goes here
-// const choices = departments.map(department => {
-//     return {
-//         name: department.name,
-//         value: department.id
-//     }
-// })
-
-// async function initialize() {
-//     const answersDept = await inquirer 
-//         .prompt([
-//             {
-//                 type: "list",
-//                 name: "department_id",
-//                 message: "Select a department",
-//                 choices: [ 
-//                     { name: "Human Resources", value: 1 },
-//                     { name: "Creative", value: 2}, 
-//                     { name: "Software Engineering", value: 3}, 
-//                     { name: "Marketing", value: 4 },
-//                     { name: "IT", value: 5}
-//                     //  Look at video for choices. He condensed it into one variable
-//                 ]
-//             }
-            
-//         ]) 
-//         .then((answersDept) => {
-
-//            console.log(answersDept.department_id); 
-//             addDepartment();
-                 
-    
-    
-            
-//         })
-//     }
 
