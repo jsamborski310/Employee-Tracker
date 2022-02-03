@@ -98,6 +98,10 @@ const answers = await inquirer
                 addNewEmployee();
                 break;
 
+            case init.updateEmployeeRole:
+                updateEmployeeRole();
+                break;
+
         }
     })
 }
@@ -287,13 +291,6 @@ function addNewEmployee() {
         }));
  
 
-    // db.query('SELECT * FROM employee', async (err, employeeData) => {
-    // const employees = await employeeData.map(({ id, first_name, last_name }) => ({
-    //     value: id,
-    //     first_name: first_name,
-    //     last_name: last_name
-    // }));
-
     db.query('SELECT * FROM employee', async (err, employeeData) => {
         const employees = await employeeData.map(employeeData => 
             `${employeeData.first_name} ${employeeData.last_name}`);
@@ -342,6 +339,7 @@ function addNewEmployee() {
                         id: answers.id
                     }
 
+                console.log("manager ", employee.manager_id)
                 console.log("\nYou have added ", employee.first_name, employee.last_name, "to the employee's database.\n"); 
     
                 db.query(
@@ -362,7 +360,7 @@ function addNewEmployee() {
             })
 
 
-        });
+        })
 
         })
         
@@ -373,49 +371,69 @@ function addNewEmployee() {
 
 
 
+function updateEmployeeRole () {
+
+
+    db.query('SELECT * FROM role', async (err, roleData) => {
+        const selectRole = await roleData.map(({ id, title }) => ({
+            value: id,
+            name: title
+        }));
+
+    db.query('SELECT * FROM employee', async (err, employeeData) => {
+        const selectEmployee = await employeeData.map(employeeData => 
+            `${employeeData.first_name} ${employeeData.last_name}`);
 
 
 
+        const answers = inquirer 
+            .prompt([
+                {
+                    type: "list",
+                    name: "employee",
+                    message: "Select employee to update role.",
+                    choices: selectEmployee
+                },
+                {
+                    type: "list",
+                    name: "role_id",
+                    message: "What is the employee's new role?",
+                    choices: selectRole,
+                }
+ 
+            ]) 
+            .then((answers) => {
+
+                const employee = {
+                        id: answers.employee,
+                        role_id: answers.role_id,
+                    }
 
 
-    //  ------ SELECT the existing department out of the `roles` table
-        //  ------ .map( the results from `roles` to equestion data for inquirer)
-        // ------- THEN prompt the user for role information (inquirer)
-            //  ---- Take the users answers and INSERT them into the `role` tahle.
+                console.log("\nYou have updated ", employee.id, "'s role.\n"); 
+    
+                db.query(
+                    `UPDATE employees SET role_id = ? WHERE id = ?', [employee.role_id, employee.id]`, 
+                
+                function (err, results) {
 
-//  Add an employee - CREATE - INSERT INTO [table_name] (col1, col2) VALUES (value1, value2)
+                    // if (err) {
+                    //     throw err;
+                    // }
 
-
-
-//  Update an employee
-
-
-
-
-// db.query = util.promisify( db.query);
-//  Watch class video for how this is set up. This changes how to query, and allows for the use of async. 
-
-
-// //  --->Do I need this now? See video
-// db.query('SELECT * FROM employees' , (err, results) => {
-//     console.log(err);
-//     console.table(results);
-// });
-
-  
-//  View all employees - READ - SELECT * FROM [table_name]
-    // ------ Need to accomplish more than SELECT * FROM since employees doesn't have a department.
+                    console.log('\nUPDATED EMPLOYEE ROLE\n')
+                    console.table(results);
+                            
+                    viewAllEmployees();  
+                        
+                          
+                });
+            })
 
 
+        })
 
-
-
-///////////////////////
-
-//  See Unit 12, Day 2, 15: schema.sql. Create the table structure.
-// See Unit 12, Day 2, 17: seeds.sql. Add dummy content to get started.
-// Day 1, Inst 7, 9 Update
-// Day 2 Lesson 11
-
-//  Use JOIN to join in other roles to this table?
-
+        })
+        
+    }
+    
