@@ -395,17 +395,18 @@ function updateEmployeeRole () {
             name: title
         }));
 
-    db.query('SELECT * FROM employee', async (err, employeeData) => {
-        const selectEmployee = await employeeData.map(employeeData => 
-            `${employeeData.first_name} ${employeeData.last_name}`);
+    // db.query('SELECT * FROM employee', async (err, employeeData) => {
+    //     const selectEmployee = await employeeData.map(employeeData => 
+    //         `${employeeData.first_name} ${employeeData.last_name}`);
 
            
-        // (employeeData => {
-        //     return {
-        //         name: `${employeeData.first_name} ${employeeData.last_name}`,
-        //         value: id      
-        //     }
-        // })
+    db.query('SELECT * FROM employee', async (err, employeeData) => {
+        const selectEmployee = await employeeData.map(employeeData => {
+            return {
+                name: `${employeeData.first_name} ${employeeData.last_name}`,
+                value: employeeData.id      
+            }
+        })
             
 
 
@@ -446,31 +447,33 @@ function updateEmployeeRole () {
                 //         }
                 //     }
                 // }
+
                 /////////////
 
-            let emID;
+            // let emID;
 
-                if(!answers.employee) {
-                    emID = employeeData.id;
-                    console.log("second employeeID: ", emID)
-                }
+            //     if(!answers.employee) {
+            //         emID = employeeData.id;
+            //         console.log("second employeeID: ", emID)
+            //     }
     
+
+                // selectEmployee.filter(employee => employee.name === answers.employee)
     
+                // console.log("testing" , answers.employee)
  
-                const employeeInfo = {
-                        name: answers.employee,
+                const employee = {
+                        id: answers.employee,
                         role_id: answers.role_id
                     }
 
-                console.log("employee role id", employeeInfo.role_id)
-                console.log("employee ID", emID)
-                console.log("\nYou have updated the role for: ", employeeInfo.name,"\n"); 
+                console.log("employee role id", employee.role_id)
+                console.log("employee ID", employee.id)
+                console.log("\nYou have updated the role for: ", employee.name,"\n"); 
 
     
-                // db.query(
-                //     'UPDATE employee SET role_id = ? WHERE id = ?', [employee.role_id, employee.id], 
                 db.query(
-                    `UPDATE employee SET role_id = ${employeeInfo.role_id} WHERE 'id' = '${employeeInfo.name}'`, 
+                    `UPDATE employee SET role_id = ${employee.role_id} WHERE id = ${employee.id}`, 
                 
 
                 function (err, results) {
