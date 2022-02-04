@@ -300,9 +300,8 @@ function addNewEmployee() {
     db.query('SELECT * FROM employee', (err, employeeData) => {
         const employees = employeeData.map(employeeData => 
             `${employeeData.first_name} ${employeeData.last_name}`);
+            employees.push('None');
 
-
-            console.log("employees: ", employees)
     
         const answers = inquirer 
             .prompt([
@@ -324,7 +323,7 @@ function addNewEmployee() {
                 },
                 {
                     type: "list",
-                    name: "manager_id",
+                    name: "manager",
                     message: "Who is the employee's manager?",
                     choices: employees,
                 },
@@ -338,37 +337,50 @@ function addNewEmployee() {
             ]) 
             .then((answers) => {
 
+
+                let managerID;
+                let managerName;
+                if(answers.manager === "none") {
+                    managerID = null;
+                } else {
+                    for (const data of employeeData) {
+                        data.fullName = `${data.first_name} ${data.last_name}`;
+                        if (data.fullName === answers.manager) {
+                            managerID = data.id;
+                            managerName = data.fullName;
+                            console.log("managerID:", managerID);
+                            console.log("managerName", managerName)
+                        }
+                    }
+                }
+
+                // if(answers.manager === employeeData.id) {
+                //     let manager_id = employeeData.id;
+                //     console.log("manager id:" , manager_id)
+                // }
+
                 const employee = {
                         first_name: answers.first_name,
                         last_name: answers.last_name,
                         role_id: answers.role_id,
-                        manager_id: answers.manager_id,
+                        // manager_id: answers.manager_id,
                         id: answers.id
                     }
-
-                // console logs
-                console.log("employee :", employee)
-                console.log("employeeID:", employee.id, "employeeFirstName:", employee.first_name, "employeeLastName", employee.last_name, "employeeRole", employee.role_id, "employeeManager", employee.manager_id)
-
 
 
                 console.log("\nYou have added ", employee.first_name, employee.last_name, "to the employee's database.\n"); 
 
+                console.log("Manager ID:" , employee.manager_id)
 
-
-                ////////
-
-               
-
-                db.query('INSERT INTO employee (id, first_name, last_name, role_id, manager_id) VALUES (?,?,?,?,?)', [employee.id, employee.first_name, employee.last_name, employee.role_id, employee.manager_id], 
+                db.query('INSERT INTO employee (id, first_name, last_name, role_id, manager_id) VALUES (?,?,?,?,?)', [employee.id, employee.first_name, employee.last_name, employee.role_id, managerID], 
                 
                     function (err, results) {
 
-                        // if (err) {
-                        //     throw err;
-                        // }
-    
-                        console.log('\nUPDATED ROLE\n')
+                        if (err) {
+                            throw err;
+                        }
+                        
+                        console.log('\nADDED NEW EMPLOYEE\n')
                         console.table(results);
                     
                         
