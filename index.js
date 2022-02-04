@@ -211,7 +211,6 @@ function addDepartment(answersDept) {
 
 function addNewRole() {
 
-    console.log("Add New Role: ", addNewRole())
 
     db.query('SELECT * FROM department', async (err, deptData) => {
         const departmentArray = await deptData.map(({ id, name }) => ({
