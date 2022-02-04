@@ -263,9 +263,9 @@ function addNewRole() {
                 
                 function (err, results) {
 
-                    // if (err) {
-                    //     throw err;
-                    // }
+                    if (err) {
+                        throw err;
+                    }
 
                     console.log('\nUPDATED ROLE\n')
                     console.table(results);
@@ -286,16 +286,12 @@ function addNewRole() {
     
 function addNewEmployee() {
 
-    
-
-
     db.query('SELECT * FROM role', (err, roleData) => {
         const roles = roleData.map(({ id, title }) => ({
             value: id,
             name: title
         }));
  
-        console.log("roles ", roles)
 
     db.query('SELECT * FROM employee', (err, employeeData) => {
         const employees = employeeData.map(employeeData => 
@@ -354,23 +350,17 @@ function addNewEmployee() {
                     }
                 }
 
-                // if(answers.manager === employeeData.id) {
-                //     let manager_id = employeeData.id;
-                //     console.log("manager id:" , manager_id)
-                // }
 
                 const employee = {
                         first_name: answers.first_name,
                         last_name: answers.last_name,
                         role_id: answers.role_id,
-                        // manager_id: answers.manager_id,
                         id: answers.id
                     }
 
 
                 console.log("\nYou have added ", employee.first_name, employee.last_name, "to the employee's database.\n"); 
 
-                console.log("Manager ID:" , employee.manager_id)
 
                 db.query('INSERT INTO employee (id, first_name, last_name, role_id, manager_id) VALUES (?,?,?,?,?)', [employee.id, employee.first_name, employee.last_name, employee.role_id, managerID], 
                 
@@ -409,6 +399,15 @@ function updateEmployeeRole () {
         const selectEmployee = await employeeData.map(employeeData => 
             `${employeeData.first_name} ${employeeData.last_name}`);
 
+           
+        // (employeeData => {
+        //     return {
+        //         name: `${employeeData.first_name} ${employeeData.last_name}`,
+        //         value: id      
+        //     }
+        // })
+            
+
 
 
         const answers = inquirer 
@@ -429,22 +428,56 @@ function updateEmployeeRole () {
             ]) 
             .then((answers) => {
 
-                const employee = {
-                        id: answers.employee,
-                        role_id: answers.role_id,
+
+            
+////////////
+                // let employeeID;
+                // let employeeName;
+                // if(answers.selectEmployee) {
+                //     console.log("selected employee: ", selectEmployee)
+                // } else {
+                //     for (const data of employeeData) {
+                //         data.fullName = `${data.first_name} ${data.last_name}`;
+                //         if (data.fullName === answers.selectEmployee) {
+                //             employeeID = data.id;
+                //             employeeName = data.fullName;
+                //             console.log("employeeID:", employeeID);
+                //             console.log("employeeName", employeeName)
+                //         }
+                //     }
+                // }
+                /////////////
+
+            let emID;
+
+                if(!answers.employee) {
+                    emID = employeeData.id;
+                    console.log("second employeeID: ", emID)
+                }
+    
+    
+ 
+                const employeeInfo = {
+                        name: answers.employee,
+                        role_id: answers.role_id
                     }
 
+                console.log("employee role id", employeeInfo.role_id)
+                console.log("employee ID", emID)
+                console.log("\nYou have updated the role for: ", employeeInfo.name,"\n"); 
 
-                console.log("\nYou have updated ", employee.id, "'s role.\n"); 
     
+                // db.query(
+                //     'UPDATE employee SET role_id = ? WHERE id = ?', [employee.role_id, employee.id], 
                 db.query(
-                    `UPDATE employee SET role_id = ? WHERE id = ?', [employee.role_id, employee.id]`, 
+                    `UPDATE employee SET role_id = ${employeeInfo.role_id} WHERE 'id' = '${employeeInfo.name}'`, 
                 
+
                 function (err, results) {
 
-                    // if (err) {
-                    //     throw err;
-                    // }
+                    if (err) {
+                        throw err;
+                    }
 
                     console.log('\nUPDATED EMPLOYEE ROLE\n')
                     console.table(results);
@@ -461,143 +494,4 @@ function updateEmployeeRole () {
         })
         
     }
-//////////////////
-
-
-    /////
-//                 db.query(
-//                 `INSERT INTO employee (id, first_name, last_name, role_id, manager_id) VALUES (${employee.id}, "${employee.first_name}", "${employee.last_name}", ${employee.role_id}, "${employee.manager_id}");`, 
-                
-//                 function (err, results) {
-
-//                     // if (err) {
-//                     //     throw err;
-//                     // }
-
-//                 console.log("AFTER QUERY: employeeID:", employee.id, "employeeFirstName:", employee.first_name, "employeeLastName", employee.last_name, "employeeRole", employee.role_id, "employeeManager", employee.manager_id)
-
-//                     console.log('\nUPDATED ROLE\n')
-//                     console.table(results);
-                
-                    
-//                     viewAllEmployees(); 
-                    
-//                 }
-                        
-//                 )                      
-//             })    
-//         })
-//     })
-// }   
     
-/////////////////////
-
-
-             ///////
-
-    //         db.query(`INSERT INTO employee (id, first_name, last_name, role_id, manager_id) VALUES (?,?,?,?,?)`, [employee.id, employee.first_name, employee.last_name, employee.role_id, employee.manager_id], (error, results) => {
-    //                 if (error) return results.json({error:error});
-    //                 // console.log('\nUPDATED ROLE\n')
-    //                 // console.table(results);
-    //                 // viewAllEmployees();
-    //             });
-            
-    //                 console.log('\nUPDATED ROLE\n')
-    //                 console.table(results);
-    //                 viewAllEmployees();
-                
-    //             }
-
-                        
-    //         );                       
-    //     })
-
-    // })}
-
-    //////////////////    
-
-
-
-///////////////////////////////
-
-// async function addNewEmployee() {
-
-
-//     db.query('SELECT * FROM role', async (err, roleData) => {
-//         const roles = await roleData.map(({ id, title }) => ({
-//             value: id,
-//             name: title
-//         }));
- 
-
-//     db.query('SELECT * FROM employee', async (err, employeeData) => {
-//         const employees = await employeeData.map(employeeData => 
-//             `${employeeData.first_name} ${employeeData.last_name}`);
-
-
-    
-//         try {
-//             const answers = await inquirer 
-//             .prompt([
-//                 {
-//                     type: "input",
-//                     name: "first_name",
-//                     message: "What is the employee's first name?",
-//                 },
-//                 {
-//                     type: "input",
-//                     name: "last_name",
-//                     message: "What is the employee's last name?",
-//                 },
-//                 {
-//                     type: "list",
-//                     name: "role_id",
-//                     message: "What is the employee's role?",
-//                     choices: roles,
-//                 },
-//                 {
-//                     type: "list",
-//                     name: "manager_id",
-//                     message: "Who is the employee's manager?",
-//                     choices: employees,
-//                 },
-//                 {
-//                     type: "input",
-//                     name: "id",
-//                     message: "What is the employee ID?",
-//                 }
-
-                
-//             ]) 
-            
-
-//                 const employee = {
-//                         first_name: answers.first_name,
-//                         last_name: answers.last_name,
-//                         role_id: answers.role_id,
-//                         manager_id: answers.manager_id,
-//                         id: answers.id
-//                     }
-
-            
-//                 console.log("\nYou have added ", employee.first_name, employee.last_name, "to the employee's database.\n"); 
-    
-//                 db.query(
-//                 `INSERT INTO role (id, first_name, last_name, role_id, manager_id) VALUES (${employee.id}, "${employee.first_name}", "${employee.last_name}", ${employee.role_id}, "${employee.manager_id}");`)
-                
-                
-//                     console.log('\nUPDATED ROLE\n')
-                    
-                            
-//                     viewAllEmployees();  
-//         }
-//         catch(err) {
-//             console.log(err);
-//         }
-
-
-//         })
-
-//         })
-        
-//     }
