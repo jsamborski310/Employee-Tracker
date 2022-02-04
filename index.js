@@ -101,6 +101,9 @@ const answers = await inquirer
             case init.updateEmployeeRole:
                 updateEmployeeRole();
                 break;
+            
+            default:
+                console.log("Quit")
 
         }
     })
@@ -352,51 +355,32 @@ function addNewEmployee() {
                 console.log("\nYou have added ", employee.first_name, employee.last_name, "to the employee's database.\n"); 
 
 
-    
-            //     db.query(
-            //     `INSERT INTO employee (id, first_name, last_name, role_id, manager_id) VALUES (${employee.id}, "${employee.first_name}", "${employee.last_name}", ${employee.role_id}, "${employee.manager_id}");`, 
-                
-            //     function (err, results) {
-
-            //         // if (err) {
-            //         //     throw err;
-            //         // }
-
-            //     console.log("AFTER QUERY: employeeID:", employee.id, "employeeFirstName:", employee.first_name, "employeeLastName", employee.last_name, "employeeRole", employee.role_id, "employeeManager", employee.manager_id)
-
-            //         console.log('\nUPDATED ROLE\n')
-            //         console.table(results);
-                
-                    
-            //         viewAllEmployees(); 
-                    
-                        
-            //     }
-            // )}
-            
-    
 
                 ////////
 
-            db.query(`INSERT INTO employee (id, first_name, last_name, role_id, manager_id) VALUES (?,?,?,?,?);`, [rec.body.id, rec.body.first_name, rec.body.last_name, rec.body.role_id, rec.body.manager_id], (error, results)} => {
-                    if (error) return results.json({error:error});
-                }
+               
+
+                db.query('INSERT INTO employee (id, first_name, last_name, role_id, manager_id) VALUES (?,?,?,?,?)', [employee.id, employee.first_name, employee.last_name, employee.role_id, employee.manager_id], 
                 
+                    function (err, results) {
 
-
-                    console.log('\nUPDATED ROLE\n')
-                    console.table(results);
-                    viewAllEmployees();
-                
-                }
-
+                        // if (err) {
+                        //     throw err;
+                        // }
+    
+                        console.log('\nUPDATED ROLE\n')
+                        console.table(results);
+                    
                         
+                        viewAllEmployees(); 
+                        
+                    } 
             );                       
         })
 
-    }
-
-    //////////////////    
+    })
+})
+}
 
 
 
@@ -442,7 +426,7 @@ function updateEmployeeRole () {
                 console.log("\nYou have updated ", employee.id, "'s role.\n"); 
     
                 db.query(
-                    `UPDATE employees SET role_id = ? WHERE id = ?', [employee.role_id, employee.id]`, 
+                    `UPDATE employee SET role_id = ? WHERE id = ?', [employee.role_id, employee.id]`, 
                 
                 function (err, results) {
 
@@ -465,7 +449,60 @@ function updateEmployeeRole () {
         })
         
     }
+//////////////////
+
+
+    /////
+//                 db.query(
+//                 `INSERT INTO employee (id, first_name, last_name, role_id, manager_id) VALUES (${employee.id}, "${employee.first_name}", "${employee.last_name}", ${employee.role_id}, "${employee.manager_id}");`, 
+                
+//                 function (err, results) {
+
+//                     // if (err) {
+//                     //     throw err;
+//                     // }
+
+//                 console.log("AFTER QUERY: employeeID:", employee.id, "employeeFirstName:", employee.first_name, "employeeLastName", employee.last_name, "employeeRole", employee.role_id, "employeeManager", employee.manager_id)
+
+//                     console.log('\nUPDATED ROLE\n')
+//                     console.table(results);
+                
+                    
+//                     viewAllEmployees(); 
+                    
+//                 }
+                        
+//                 )                      
+//             })    
+//         })
+//     })
+// }   
     
+/////////////////////
+
+
+             ///////
+
+    //         db.query(`INSERT INTO employee (id, first_name, last_name, role_id, manager_id) VALUES (?,?,?,?,?)`, [employee.id, employee.first_name, employee.last_name, employee.role_id, employee.manager_id], (error, results) => {
+    //                 if (error) return results.json({error:error});
+    //                 // console.log('\nUPDATED ROLE\n')
+    //                 // console.table(results);
+    //                 // viewAllEmployees();
+    //             });
+            
+    //                 console.log('\nUPDATED ROLE\n')
+    //                 console.table(results);
+    //                 viewAllEmployees();
+                
+    //             }
+
+                        
+    //         );                       
+    //     })
+
+    // })}
+
+    //////////////////    
 
 
 
