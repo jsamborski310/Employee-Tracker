@@ -1,40 +1,13 @@
+// Pulling in dependancies and files needed for this application to run. 
+
 const mysql = require('mysql2');
 const db = require('./db/connection');
 const inquirer = require('inquirer');
 const cTable = require('console.table');
-// const connection = require('./db/connection');
-// require('console.table');
+const connection = require('./db/connection');
 
 
-const departments = [
-        {
-            id: 1,
-            name: "Human Resources"
-        },
-        {
-            id: 2,
-            name: "Creative"
-        },
-        {
-            id: 3,
-            name: "Software Engineering"
-        },
-        {
-            id: 4,
-            name: "Marketing"
-        },
-        {
-            id: 5,
-            name: "IT"
-        }
-    ]
-
-const choices = departments.map(department => {
-    return {
-        name: department.name,
-        value: department.id
-    }
-})
+// Setting up User options.
 
 let init = {
     viewEmployees: "View All Employees",
@@ -43,7 +16,8 @@ let init = {
     viewRoles: "View All Roles",
     addRole: "Add Role",
     viewDepartments: "View All Departments",
-    addDepartment: "Add Department"
+    addDepartment: "Add Department",
+    quit: "Quit"
 }
 
 
@@ -63,13 +37,14 @@ const answers = await inquirer
                 init.viewRoles,
                 init.addRole,
                 init.viewDepartments,
-                init.addDepartment
+                init.addDepartment,
+                init.quit
 
-                //  Look at video for choices. He condensed it into one variable
             ]
         }
         
     ]) 
+        // Switch statement to call the functions for action the user selected.
 
         .then((answers) => {
 
@@ -87,7 +62,7 @@ const answers = await inquirer
                 break;
 
             case init.addDepartment:
-                addNewDept();
+                addDepartment();
                 break;
 
             case init.addRole:
@@ -102,43 +77,17 @@ const answers = await inquirer
                 updateEmployeeRole();
                 break;
             
-            default:
-                console.log("Quit")
-
+            case init.quit:
+                connection.end();
+                break;
+            
         }
     })
 }
 
 
 
-async function addNewDept() {
-    const answersDept = await inquirer 
-        .prompt([
-            {
-                type: "input",
-                name: "name",
-                message: "What is the name of the department?",
-            },
-            {
-                type: "input",
-                name: "id",
-                message: "Enter the department id.",
-            }
-            
-        ]) 
-        .then((answersDept) => {
-
-            departments.value = answersDept.id;
-            departments.name = answersDept.name;
-
-            addDepartment();
-            viewAllDepartments();
-            
-        })
-    }
-
-
-//  VIEWING DATA
+//-----VIEWING------//
 
 function viewAllDepartments(answersDept) {
 
@@ -192,29 +141,56 @@ function viewAllRoles(answers) {
 
 }
 
-// CREATING/UPDATING
+// -----CREATING------//
 
 function addDepartment(answersDept) {
    
-    console.log("\nYou have added", departments.name, "to the database.\n"); 
+    db.query('SELECT * FROM department', async (err, deptData) => {
+        const departments = await deptData.map(({ id, name }) => ({
+            value: id,
+            name: name
+        }));
 
-    db.query(
-        `INSERT INTO department (id, name) VALUES (${departments.value}, "${departments.name}");`, 
-        
-        function (err, results) {
-        
-            console.log('\nUPDATED DEPARTMENTS\n')
-            console.table(results);
 
+    const answersDept = await inquirer 
+        .prompt([
+            {
+                type: "input",
+                name: "name",
+                message: "What is the name of the department?",
+            },
+            {
+                type: "input",
+                name: "id",
+                message: "Enter the department id.",
+            }
             
-      });
+        ]) 
+        .then((answersDept) => {
 
-}
+            departments.value = answersDept.id;
+            departments.name = answersDept.name;
 
+
+            // Inserting new department info into database.
+            db.query(
+                `INSERT INTO department (id, name) VALUES (${departments.value}, "${departments.name}");`, 
+                
+                function (err, results) {
+                
+                    console.log("\nYou have added", departments.name, "to the database.\n"); 
+                    viewAllDepartments();
+        
+                    
+              });
+            
+        })
+    })}
+    
 
 function addNewRole() {
 
-
+    // Grabbing data from the department database.
     db.query('SELECT * FROM department', async (err, deptData) => {
         const departmentArray = await deptData.map(({ id, name }) => ({
             value: id,
@@ -256,8 +232,8 @@ function addNewRole() {
                         id: answersRole.role_id
                     }
 
-                console.log("\nYou have added a new", roles.title, "role to the database.\n"); 
-    
+                 
+                // Inserting data for new role into the database.
                 db.query(
                 `INSERT INTO role (id, title, salary, department_id) VALUES (${roles.id}, "${roles.title}", ${roles.salary}, ${roles.department_id});`, 
                 
@@ -267,8 +243,7 @@ function addNewRole() {
                         throw err;
                     }
 
-                    console.log('\nUPDATED ROLE\n')
-                    console.table(results);
+                    console.log("\nYou have added a new role to the database:", roles.title);
                             
                     viewAllRoles();  
                         
@@ -286,6 +261,7 @@ function addNewRole() {
     
 function addNewEmployee() {
 
+    // Grabbing data from role and employee tables.
     db.query('SELECT * FROM role', (err, roleData) => {
         const roles = roleData.map(({ id, title }) => ({
             value: id,
@@ -327,13 +303,12 @@ function addNewEmployee() {
                     type: "input",
                     name: "id",
                     message: "What is the employee ID?",
-                }
-
-                
+                }              
             ]) 
+
             .then((answers) => {
 
-
+                // Sectioning off data. Grabbing the manager ID to insert into table.
                 let managerID;
                 let managerName;
                 if(answers.manager === "none") {
@@ -344,8 +319,6 @@ function addNewEmployee() {
                         if (data.fullName === answers.manager) {
                             managerID = data.id;
                             managerName = data.fullName;
-                            console.log("managerID:", managerID);
-                            console.log("managerName", managerName)
                         }
                     }
                 }
@@ -357,11 +330,9 @@ function addNewEmployee() {
                         role_id: answers.role_id,
                         id: answers.id
                     }
+               
 
-
-                console.log("\nYou have added ", employee.first_name, employee.last_name, "to the employee's database.\n"); 
-
-
+                // Inserting new employee information into the database.
                 db.query('INSERT INTO employee (id, first_name, last_name, role_id, manager_id) VALUES (?,?,?,?,?)', [employee.id, employee.first_name, employee.last_name, employee.role_id, managerID], 
                 
                     function (err, results) {
@@ -370,34 +341,27 @@ function addNewEmployee() {
                             throw err;
                         }
                         
-                        console.log('\nADDED NEW EMPLOYEE\n')
-                        console.table(results);
-                    
+                        console.log("\nYou have added", employee.first_name, employee.last_name, "to the employee's database."); 
                         
                         viewAllEmployees(); 
                         
                     } 
-            );                       
+                );                       
+            })
         })
-
     })
-})
 }
 
-
+// -----UPDATING------//
 
 function updateEmployeeRole () {
 
-
+    // Grabbing data from role and employee tables.
     db.query('SELECT * FROM role', async (err, roleData) => {
         const selectRole = await roleData.map(({ id, title }) => ({
             value: id,
             name: title
         }));
-
-    // db.query('SELECT * FROM employee', async (err, employeeData) => {
-    //     const selectEmployee = await employeeData.map(employeeData => 
-    //         `${employeeData.first_name} ${employeeData.last_name}`);
 
            
     db.query('SELECT * FROM employee', async (err, employeeData) => {
@@ -408,8 +372,6 @@ function updateEmployeeRole () {
             }
         })
             
-
-
 
         const answers = inquirer 
             .prompt([
@@ -425,53 +387,17 @@ function updateEmployeeRole () {
                     message: "What is the employee's new role?",
                     choices: selectRole,
                 }
- 
             ]) 
+
             .then((answers) => {
-
-
-            
-////////////
-                // let employeeID;
-                // let employeeName;
-                // if(answers.selectEmployee) {
-                //     console.log("selected employee: ", selectEmployee)
-                // } else {
-                //     for (const data of employeeData) {
-                //         data.fullName = `${data.first_name} ${data.last_name}`;
-                //         if (data.fullName === answers.selectEmployee) {
-                //             employeeID = data.id;
-                //             employeeName = data.fullName;
-                //             console.log("employeeID:", employeeID);
-                //             console.log("employeeName", employeeName)
-                //         }
-                //     }
-                // }
-
-                /////////////
-
-            // let emID;
-
-            //     if(!answers.employee) {
-            //         emID = employeeData.id;
-            //         console.log("second employeeID: ", emID)
-            //     }
-    
-
-                // selectEmployee.filter(employee => employee.name === answers.employee)
-    
-                // console.log("testing" , answers.employee)
  
                 const employee = {
                         id: answers.employee,
                         role_id: answers.role_id
                     }
 
-                console.log("employee role id", employee.role_id)
-                console.log("employee ID", employee.id)
-                console.log("\nYou have updated the role for: ", employee.name,"\n"); 
-
-    
+            
+                //  Updating employee role via role ID and employee ID.
                 db.query(
                     `UPDATE employee SET role_id = ${employee.role_id} WHERE id = ${employee.id}`, 
                 
@@ -482,8 +408,7 @@ function updateEmployeeRole () {
                         throw err;
                     }
 
-                    console.log('\nUPDATED EMPLOYEE ROLE\n')
-                    console.table(results);
+                    console.log("\nSuccess! You have updated the employee role."); 
                             
                     viewAllEmployees();  
                         
@@ -491,10 +416,9 @@ function updateEmployeeRole () {
                 });
             })
 
-
         })
 
-        })
+    })
         
-    }
+}
     
