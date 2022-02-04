@@ -211,6 +211,7 @@ function addDepartment(answersDept) {
 
 function addNewRole() {
 
+    console.log("Add New Role: ", addNewRole())
 
     db.query('SELECT * FROM department', async (err, deptData) => {
         const departmentArray = await deptData.map(({ id, name }) => ({
@@ -283,20 +284,24 @@ function addNewRole() {
     
 function addNewEmployee() {
 
+    
 
-    db.query('SELECT * FROM role', async (err, roleData) => {
-        const roles = await roleData.map(({ id, title }) => ({
+
+    db.query('SELECT * FROM role', (err, roleData) => {
+        const roles = roleData.map(({ id, title }) => ({
             value: id,
             name: title
         }));
  
+        console.log("roles ", roles)
 
-    db.query('SELECT * FROM employee', async (err, employeeData) => {
-        const employees = await employeeData.map(employeeData => 
+    db.query('SELECT * FROM employee', (err, employeeData) => {
+        const employees = employeeData.map(employeeData => 
             `${employeeData.first_name} ${employeeData.last_name}`);
 
 
-
+            console.log("employees: ", employees)
+    
         const answers = inquirer 
             .prompt([
                 {
@@ -339,8 +344,15 @@ function addNewEmployee() {
                         id: answers.id
                     }
 
-                console.log("manager ", employee.manager_id)
+                // console logs
+                console.log("employee :", employee)
+                console.log("employeeID:", employee.id, "employeeFirstName:", employee.first_name, "employeeLastName", employee.last_name, "employeeRole", employee.role_id, "employeeManager", employee.manager_id)
+
+
+
                 console.log("\nYou have added ", employee.first_name, employee.last_name, "to the employee's database.\n"); 
+
+
     
                 db.query(
                 `INSERT INTO role (id, first_name, last_name, role_id, manager_id) VALUES (${employee.id}, "${employee.first_name}", "${employee.last_name}", ${employee.role_id}, "${employee.manager_id}");`, 
@@ -351,23 +363,29 @@ function addNewEmployee() {
                     //     throw err;
                     // }
 
+
+                console.log("AFTER QUERY: employeeID:", employee.id, "employeeFirstName:", employee.first_name, "employeeLastName", employee.last_name, "employeeRole", employee.role_id, "employeeManager", employee.manager_id)
+
                     console.log('\nUPDATED ROLE\n')
                     console.table(results);
-                            
-                    viewAllEmployees();  
+                    // return results 
+                    
+                    viewAllEmployees(); 
+                    
                         
                     });
+
+                    
+                    
             })
 
 
         })
 
         })
+        // console.log("New employee: ", addNewEmployee())
         
     }
-//     )
-
-// }
 
 
 
@@ -437,3 +455,91 @@ function updateEmployeeRole () {
         
     }
     
+
+
+
+///////////////////////////////
+
+// async function addNewEmployee() {
+
+
+//     db.query('SELECT * FROM role', async (err, roleData) => {
+//         const roles = await roleData.map(({ id, title }) => ({
+//             value: id,
+//             name: title
+//         }));
+ 
+
+//     db.query('SELECT * FROM employee', async (err, employeeData) => {
+//         const employees = await employeeData.map(employeeData => 
+//             `${employeeData.first_name} ${employeeData.last_name}`);
+
+
+    
+//         try {
+//             const answers = await inquirer 
+//             .prompt([
+//                 {
+//                     type: "input",
+//                     name: "first_name",
+//                     message: "What is the employee's first name?",
+//                 },
+//                 {
+//                     type: "input",
+//                     name: "last_name",
+//                     message: "What is the employee's last name?",
+//                 },
+//                 {
+//                     type: "list",
+//                     name: "role_id",
+//                     message: "What is the employee's role?",
+//                     choices: roles,
+//                 },
+//                 {
+//                     type: "list",
+//                     name: "manager_id",
+//                     message: "Who is the employee's manager?",
+//                     choices: employees,
+//                 },
+//                 {
+//                     type: "input",
+//                     name: "id",
+//                     message: "What is the employee ID?",
+//                 }
+
+                
+//             ]) 
+            
+
+//                 const employee = {
+//                         first_name: answers.first_name,
+//                         last_name: answers.last_name,
+//                         role_id: answers.role_id,
+//                         manager_id: answers.manager_id,
+//                         id: answers.id
+//                     }
+
+            
+//                 console.log("\nYou have added ", employee.first_name, employee.last_name, "to the employee's database.\n"); 
+    
+//                 db.query(
+//                 `INSERT INTO role (id, first_name, last_name, role_id, manager_id) VALUES (${employee.id}, "${employee.first_name}", "${employee.last_name}", ${employee.role_id}, "${employee.manager_id}");`)
+                
+                
+//                     console.log('\nUPDATED ROLE\n')
+                    
+                            
+//                     viewAllEmployees();  
+//         }
+//         catch(err) {
+//             console.log(err);
+//         }
+
+
+//         })
+
+//         })
+        
+//     }
+
+///////////////////////////////
