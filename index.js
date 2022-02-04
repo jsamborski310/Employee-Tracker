@@ -155,8 +155,8 @@ function viewAllEmployees(answers) {
 
     const query = `SELECT employee.id, employee.first_name AS "first name", employee.last_name AS "last name", role.title, department.name AS department, role.salary, CONCAT(manager.first_name, " ", manager.last_name) AS manager 
     FROM employee
-    LEFT JOIN employee manager on manager.id = employee.manager_id
-    INNER JOIN role ON (role.id=employee.role_id)
+    LEFT JOIN employee manager ON manager.id = employee.manager_id
+    INNER JOIN role ON role.id=employee.role_id
     INNER JOIN department ON (department.id = role.department_id);
     `;
 
@@ -353,38 +353,50 @@ function addNewEmployee() {
 
 
     
-                db.query(
-                `INSERT INTO role (id, first_name, last_name, role_id, manager_id) VALUES (${employee.id}, "${employee.first_name}", "${employee.last_name}", ${employee.role_id}, "${employee.manager_id}");`, 
+            //     db.query(
+            //     `INSERT INTO employee (id, first_name, last_name, role_id, manager_id) VALUES (${employee.id}, "${employee.first_name}", "${employee.last_name}", ${employee.role_id}, "${employee.manager_id}");`, 
                 
-                function (err, results) {
+            //     function (err, results) {
 
-                    // if (err) {
-                    //     throw err;
-                    // }
+            //         // if (err) {
+            //         //     throw err;
+            //         // }
 
+            //     console.log("AFTER QUERY: employeeID:", employee.id, "employeeFirstName:", employee.first_name, "employeeLastName", employee.last_name, "employeeRole", employee.role_id, "employeeManager", employee.manager_id)
 
-                console.log("AFTER QUERY: employeeID:", employee.id, "employeeFirstName:", employee.first_name, "employeeLastName", employee.last_name, "employeeRole", employee.role_id, "employeeManager", employee.manager_id)
+            //         console.log('\nUPDATED ROLE\n')
+            //         console.table(results);
+                
+                    
+            //         viewAllEmployees(); 
+                    
+                        
+            //     }
+            // )}
+            
+    
+
+                ////////
+
+            db.query(`INSERT INTO employee (id, first_name, last_name, role_id, manager_id) VALUES (?,?,?,?,?);`, [rec.body.id, rec.body.first_name, rec.body.last_name, rec.body.role_id, rec.body.manager_id], (error, results)} => {
+                    if (error) return results.json({error:error});
+                }
+                
+
 
                     console.log('\nUPDATED ROLE\n')
                     console.table(results);
-                    // return results 
-                    
-                    viewAllEmployees(); 
-                    
+                    viewAllEmployees();
+                
+                }
+
                         
-                    });
-
-                    
-                    
-            })
-
-
+            );                       
         })
 
-        })
-        // console.log("New employee: ", addNewEmployee())
-        
     }
+
+    //////////////////    
 
 
 
@@ -540,5 +552,3 @@ function updateEmployeeRole () {
 //         })
         
 //     }
-
-///////////////////////////////
