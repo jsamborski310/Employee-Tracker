@@ -49,7 +49,7 @@ This application is covered under the MIT license.
 
 ## Usage
 
-![Gif of the Employee Tracker in action.](./public/assets/images/Note-Taker-in-Action.gif)
+![Gif of the Employee Tracker in action.](/assets/images/employee-tracker-demo.gif)
 
 This is a command-line application. Once it has been cloned to your local environment, open the application. Run the following commands:
 
