@@ -33,9 +33,15 @@ Clone the repository onto your local environment.
 
 The following dependancies, listed in `package.json` must be installed to run this application: 
 
-`npm install express` to collect user input.
+* asciiart-logo
+* console.table
+* inquirer
+* mysql2
 
-`npm install uuid` to run unit tests.
+Run the following code to install the dependancies: 
+
+`npm install express` 
+
 
 ## License
 
@@ -43,65 +49,44 @@ This application is covered under the MIT license.
 
 ## Usage
 
-![Gif of the Note Taker in action.](./public/assets/images/Note-Taker-in-Action.gif)
+![Gif of the Employee Tracker in action.](./public/assets/images/Note-Taker-in-Action.gif)
 
-Application is deployed to Heroku. 
+This is a command-line application. Once it has been cloned to your local environment, open the application. Run the following commands:
 
-Navigate to the page: https://js-note-taker-2022.herokuapp.com/. Click Get Started to to view the notes page.  
+`mysql -u root -p` followed by your password to access MySQL.
 
-Right-click the application and open it in terminal. Enter a Title and a Description. When the note is completed, click the Save icon. The note will be added to the left panel. View previous notes by clicking on them. To Delete a saved note, click the trash icon. 
+`source schema.sql` followed by `source seeds.sql` to source the files. 
+
+Right-click the index.js file and open it in terminal. Run `npm start`. Select an option from the list to get started. After providing an answer for each of the questions, a corresponding table will be displayed. 
 
 
 ### Application Screenshots
 
 Terminal View
 
-![Screen shot of terminal displaying success in adding and deleting note.](./public/assets/images/Note-Taker-Terminal.png)
+![Screen shot of terminal displaying employees table.](/assets/images/view-employees.png)
 
+![Screen shot of terminal displaying roles table.](/assets/images/view-roles.png)
+
+![Screen shot of terminal displaying departments table.](/assets/images/view-departments.png)
 
 
 ## Road Bumps
 
-Added delete functionality for a better user experience. Wrote logic to search through the notes stored, find the matching id for the note selected for deletion, and used the splice method to remove the note from the array of existing notes. The road bump? In the initial phases, when deleted, the note would either be removed from the database OR the notes page, but not both. After several attempts, I wrote logic to delete the note from the database. During testing, I noticed that although the deleted note was removed from the database, it persisted on the notes page...that is...until a new note was added. Then the deleted note disappeared. Here's a snippet of the working code:
+The following two snippets of code were headache inducing. In both of these instances, both a name and a value were being passed through a variable. The program will fail if the incorrect value is being INSERTED into a table. Before my aha moment (because I had commented out my `throw err` and couldn't figure out what was wrong), the employee name (a string) was being inserted. The column, however, calls for the `manager_id` -> an integer. After adding additional lines of code to grab the ID, the new employee was successfully added to the database. 
 
-```
-app.delete('/api/notes/:id', (req, res) => {
+`db.query('INSERT INTO employee (id, first_name, last_name, role_id, manager_id) VALUES (?,?,?,?,?)', [employee.id, employee.first_name, employee.last_name, employee.role_id, managerID],`
 
-    const noteIndex = notes.findIndex(({id}) => id === req.params.id);
+Same issue here. `employee.id` was pulling through a string and not an integer. MySQL may throw an error if you compare a number with a string. It may look something like this: Truncated incorrect DOUBLE value. This was my first clue that I wasn't passing through the correct data, and a big learning moment. 
 
-    if (noteIndex >= 0) {
-        notes.splice(noteIndex, 1)
+`db.query('UPDATE employee SET role_id = ${employee.role_id} WHERE id = ${employee.id}', `
 
-          fs.writeFile(
-            './db/db.json', JSON.stringify(notes, null, 4), 
-            (writeErr) =>
-              writeErr
-                ? console.error(writeErr)
-                : console.info('Successfully deleted note with ID:' + req.params.id)
-          );
-
-          res.sendStatus(204)
-    }
-
-});
-```
-
-And this is the line that did the magic. 
-
-`res.sendStatus(204)`
-
-Deleted items on the notes page persisted until the page was refreshed. This line of code validates the delete button click and instructs the application to run the above logic. 
-
+During the building of this application, I stumbled over many road bumps, but these two ranked high on the list.  
 
 
 ## Preview
 
-GitHub Repo: https://github.com/jsamborski310/Note-Taker
-
-Heroku: https://js-note-taker-2022.herokuapp.com/
-
-![Screen shot of Note Taker with no notes.](./public/assets/images/Note-Taker-Initial.png)
-![Screen shot of Note Taker with no notes.](./public/assets/images/Note-Taker.png)
+GitHub Repo: https://github.com/jsamborski310/Employee-Tracker
 
 
 ## Questions
